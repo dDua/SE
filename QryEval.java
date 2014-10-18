@@ -659,7 +659,7 @@ public int compare(scoreArray o1,
 				//query.add(new QryopSlWSum(turl));
 			}else if(temp.args.get(i) instanceof QryopIlNear || temp.args.get(i) instanceof QryopIlSyn){
 				QryopSlWSum eval  = new QryopSlWSum();
-				List<String> fields = new ArrayList();
+				List<String> fields = new ArrayList<String>();
 				fields.add("url");
 				fields.add("body");
 				fields.add("inlink");
