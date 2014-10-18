@@ -127,7 +127,7 @@ public double getDefaultScore(RetrievalModel r, long docid)
 		return (0.0);
 	else if(r instanceof RetreivalModelIndri){
 		//int termcount = this.args.size();
-		double probScore = 1.0;
+		double probScore = 0.0;
 		double totalWgt = 0.0;
 		for(int k=0;k<this.args.size();k++)
 		{

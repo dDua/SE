@@ -180,13 +180,13 @@ public int compare(scoreArray o1,
 		else {
 			ret = new RetrievalModelRankedBoolean();
 		}
-		
-		Qryop parsedQuery1 = parseQuery("#WINDOW/8(heart rate)",ret);
-		//Qryop parsedQuery1 = parseQuery("brooks brothers clearance",ret);
+//		Qryop parsedQuery1 = parseQuery("lower #WINDOW/8(heart rate)",ret); 
+		//Qryop parsedQuery1 = parseQuery("#WAND(0.3 living 0.1 in 0.6 india)",ret);
+		//Qryop parsedQuery1 = parseQuery("#WSUM(0.3 #AND(brooks.title brothers.title) 0.7 #AND(brooks brothers clearance)) ",ret);
 		//if(ret instanceof RetreivalModelIndri){
 			//parsedQuery1 = multipleRep(parsedQuery1);
 		//}
-		QryResult result1 = parsedQuery1.evaluate(ret);
+//		QryResult result1 = parsedQuery1.evaluate(ret);
 		//int id1 = getInternalDocid("clueweb09-en0001-66-14262");
 		//int id2 = getInternalDocid("clueweb09-en0011-58-19607");
 		BufferedReader reader = null;
@@ -381,22 +381,22 @@ public int compare(scoreArray o1,
 	    }
 	    
 	    
-		if(!qString.startsWith("(")){
-			qString = defaultOperator.toString().replace("(","").replace(")", "").trim()+"(" + qString + ")";
-		}
-		if(qString.toLowerCase().startsWith("#window") || qString.toLowerCase().startsWith("#near")){
-	    	qString = defaultOperator.toString().replace("(","").replace(")", "").trim()+"(" + qString + ")";
-	    }
-//		if (qString.charAt(0) != '#' && r instanceof RetrievalModelTfidfRanked) {
-//				qString = "#or(" + qString + ")";
-//				//stack.push(new QryopSlOR());
-//			} else if (!qString.toLowerCase().startsWith("#sum") && r instanceof RetrievalModelBM25) {
-//				qString = "#sum(" + qString + ")";
-//				//defaultOperator = new QryopIlSum();
-//			} else if (!qString.toLowerCase().startsWith("#and") && r instanceof RetreivalModelIndri) {
-//				qString = "#and(" + qString + ")";
-//				//defaultOperator = new QryopSlAnd();
-//			}
+//		if(!qString.startsWith("(")){
+//			qString = defaultOperator.toString().replace("(","").replace(")", "").trim()+"(" + qString + ")";
+//		}
+//		if(qString.toLowerCase().startsWith("#window") || qString.toLowerCase().startsWith("#near")){
+//	    	qString = defaultOperator.toString().replace("(","").replace(")", "").trim()+"(" + qString + ")";
+//	    }
+		if (qString.charAt(0) != '#' && r instanceof RetrievalModelTfidfRanked) {
+				qString = "#or(" + qString + ")";
+				//stack.push(new QryopSlOR());
+			} else if (!qString.toLowerCase().startsWith("#sum") && r instanceof RetrievalModelBM25) {
+				qString = "#sum(" + qString + ")";
+				//defaultOperator = new QryopIlSum();
+			} else if (!(qString.toLowerCase().startsWith("#and") || qString.toLowerCase().startsWith("#wand") || qString.toLowerCase().startsWith("#wsum")) && r instanceof RetreivalModelIndri) {
+				qString = "#and(" + qString + ")";
+				//defaultOperator = new QryopSlAnd();
+			}
 //			else {
 //				qString = "#or(" + qString + ")";
 //				//defaultOperator = new QryopSlOR();
@@ -425,16 +425,25 @@ public int compare(scoreArray o1,
 				// Ignore most delimiters.
 			} else if (token.equalsIgnoreCase("#and")) {
 				currentOp = new QryopSlAnd();
+				if(weight>0.0)
+					currentOp.weight = weight;
 				stack.push(currentOp);
+				weight = -1.0;
 			} else if (token.equalsIgnoreCase("#sum")) {
 				currentOp = new QryopIlSum();
+				if(weight>0.0)
+					currentOp.weight = weight;
 				stack.push(currentOp);
+				weight = -1.0;
 			} else if (token.equalsIgnoreCase("#syn")) {
 				currentOp = new QryopIlSyn();						
 				stack.push(currentOp);
 			} else if (token.equalsIgnoreCase("#or")) {
 				currentOp = new QryopSlOR();
+				if(weight>0.0)
+					currentOp.weight = weight;
 				stack.push(currentOp);
+				weight = -1.0;
 			} else if (token.toLowerCase().contains("#near/")) {
 				String[] t = token.split("/");
 				currentOp =new QryopIlNear(Integer.parseInt(t[1].trim()));
@@ -445,13 +454,21 @@ public int compare(scoreArray o1,
 				stack.push(currentOp);
 			} else if (token.toLowerCase().contains("#wsum")) {
 				currentOp = new QryopSlWSum();
+				if(weight>0.0)
+					currentOp.weight = weight;
 				stack.push(currentOp);
 			}else if (token.toLowerCase().contains("#wand")) {
 				currentOp = new QryopSlWand();
+				if(weight>0.0)
+					currentOp.weight = weight;
 				stack.push(currentOp);
+				weight = -1.0;
 			} else if(m1.matches() && r instanceof RetreivalModelIndri ){
+//				weight = Double.parseDouble(token);
+//				Qryop v = stack.pop();
+//				v.weight = weight;
+//				stack.push(v);
 				weight = Double.parseDouble(token);
-				
 			}
 			else if (token.startsWith(")")) { // Finish current query
 												// operator.
@@ -533,7 +550,7 @@ public int compare(scoreArray o1,
 				term = (new QryopIlTerm(tokenizeQuery(token)[0]));
 		}
 		
-		if(weight>0.0)
+		if(weight>0.0 && term!=null)
 			term.weight = weight;
 		return term;
 	}
