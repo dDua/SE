@@ -126,7 +126,7 @@ public class QryopIlWindow extends QryopIl {
 					if (matchingPositions.size() > 0) {
 						InvList listResult = new InvList();
 						listResult.appendPosting(compareTermList.get(outerIterLenComp).docid, matchingPositions);	
-						//cumtf += listResult.ctf;
+						cumtf += listResult.ctf;
 						cumdf += listResult.df;
 						intermediateResultList.add(listResult.getPostings(0));
 					}
