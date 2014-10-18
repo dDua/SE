@@ -181,14 +181,14 @@ public int compare(scoreArray o1,
 			ret = new RetrievalModelRankedBoolean();
 		}
 		
-		Qryop parsedQuery1 = parseQuery("#WINDOW/8(cheap internet)",ret);
+		//Qryop parsedQuery1 = parseQuery("#WINDOW/8(cheap internet)",ret);
 		//Qryop parsedQuery1 = parseQuery("brooks brothers clearance",ret);
 		//if(ret instanceof RetreivalModelIndri){
 			//parsedQuery1 = multipleRep(parsedQuery1);
 		//}
-		QryResult result1 = parsedQuery1.evaluate(ret);
-		int id1 = getInternalDocid("clueweb09-en0001-66-14262");
-		int id2 = getInternalDocid("clueweb09-en0011-58-19607");
+		//QryResult result1 = parsedQuery1.evaluate(ret);
+		//int id1 = getInternalDocid("clueweb09-en0001-66-14262");
+		//int id2 = getInternalDocid("clueweb09-en0011-58-19607");
 		BufferedReader reader = null;
 		BufferedWriter writer = null;
 		
@@ -380,7 +380,10 @@ public int compare(scoreArray o1,
 	    	hashes +=1;
 	    }
 	    
-		if(!qString.startsWith("(") && hashes!=1){
+	    if(qString.toLowerCase().startsWith("#window") || qString.toLowerCase().startsWith("#near")){
+	    	qString = defaultOperator.toString().replace("(","").replace(")", "").trim()+"(" + qString + ")";
+	    }
+		if(!qString.startsWith("(") && hashes!=1 ){
 			qString = defaultOperator.toString() +"(" + qString + ")";
 		}
 //		if (qString.charAt(0) != '#' && r instanceof RetrievalModelTfidfRanked) {
